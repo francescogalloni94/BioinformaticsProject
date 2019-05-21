@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib as plt
+from sklearn.preprocessing import LabelEncoder
 
 #Read data and data preprocessing
 epigenomic_data = pd.read_csv('GM12878.csv')
@@ -29,5 +30,14 @@ A_Enh_Prom_data = concat_data.loc[(concat_data['class'] == 'A-E') | (concat_data
 A_Enh_Prom_X = A_Enh_Prom_data.iloc[:,:-1].values
 A_Enh_Prom_y = A_Enh_Prom_data.iloc[:,-1].values
 
+#Encoding Y variables
+complete_data_encoder = LabelEncoder()
+complete_data_y = complete_data_encoder.fit_transform(complete_data_y)
+A_I_Enhancer_encoder = LabelEncoder()
+A_I_Enhancer_y = A_I_Enhancer_encoder.fit_transform(A_I_Enhancer_y)
+A_I_Promoter_encoder = LabelEncoder()
+A_I_Promoter_y = A_I_Promoter_encoder.fit_transform(A_I_Promoter_y)
+A_Enh_Prom_encoder = LabelEncoder()
+A_Enh_Prom_y = A_Enh_Prom_encoder.fit_transform(A_Enh_Prom_y)
 
 
