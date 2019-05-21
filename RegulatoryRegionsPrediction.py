@@ -4,6 +4,10 @@ import matplotlib as plt
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
 
 #Read data and data preprocessing
 print('Reading data and preprocessing..\n')
@@ -64,4 +68,43 @@ A_I_Promoter_X_test = sc_AIP.transform(A_I_Promoter_X_test)
 sc_AEP = StandardScaler()
 A_Enh_Prom_X_train = sc_AEP.fit_transform(A_Enh_Prom_X_train)
 A_Enh_Prom_X_test = sc_AEP.transform(A_Enh_Prom_X_test)
+
+#Training and Testing Active Inactive Enhancer
+print('Training Active Inactive Enhancer Random forest classifier...\n')
+A_I_Enhancer_classifier = RandomForestClassifier(n_estimators=100,criterion='entropy')
+A_I_Enhancer_classifier.fit(A_I_Enhancer_X_train,A_I_Enhancer_y_train)
+
+y_AI_Enhancer_pred = A_I_Enhancer_classifier.predict(A_I_Enhancer_X_test)
+
+cm = confusion_matrix(A_I_Enhancer_y_test,y_AI_Enhancer_pred)
+print('Confusion Matrix:\n')
+print(cm)
+print('Accuracy score: '+str(accuracy_score(A_I_Enhancer_y_test,y_AI_Enhancer_pred)))
+print('F1 score: '+str(f1_score(A_I_Enhancer_y_test,y_AI_Enhancer_pred))+'\n')
+
+#Training and Testing Active Inactive Promoter
+print('Training Active Inactive Promoter Random forest classifier...\n')
+A_I_Promoter_classifier = RandomForestClassifier(n_estimators=100,criterion='entropy')
+A_I_Promoter_classifier.fit(A_I_Promoter_X_train,A_I_Promoter_y_train)
+
+y_AI_Promoter_pred = A_I_Promoter_classifier.predict(A_I_Promoter_X_test)
+
+cm = confusion_matrix(A_I_Promoter_y_test,y_AI_Promoter_pred)
+print('Confusion Matrix:\n')
+print(cm)
+print('Accuracy score: '+str(accuracy_score(A_I_Promoter_y_test,y_AI_Promoter_pred)))
+print('F1 score: '+str(f1_score(A_I_Promoter_y_test,y_AI_Promoter_pred))+'\n')
+
+#Training and testing Active Enhancer Active Promoter
+print('Training Active Enhancer, Active Promoter Random forest classifier...\n')
+A_Enh_Prom_classifier = RandomForestClassifier(n_estimators=100,criterion='entropy')
+A_Enh_Prom_classifier.fit(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
+
+y_A_Enh_Prom_pred = A_Enh_Prom_classifier.predict(A_Enh_Prom_X_test)
+
+cm = confusion_matrix(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)
+print('Confusion Matrix:\n')
+print(cm)
+print('Accuracy score: '+str(accuracy_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)))
+print('F1 score: '+str(f1_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred))+'\n')
 
