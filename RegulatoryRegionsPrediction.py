@@ -8,6 +8,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
+from sklearn.model_selection import GridSearchCV
+from confusion_matrix import plot_confusion_matrix
 
 #Read data and data preprocessing
 print('Reading data and preprocessing..\n')
@@ -70,41 +72,61 @@ A_Enh_Prom_X_train = sc_AEP.fit_transform(A_Enh_Prom_X_train)
 A_Enh_Prom_X_test = sc_AEP.transform(A_Enh_Prom_X_test)
 
 #Training and Testing Active Inactive Enhancer
-print('Training Active Inactive Enhancer Random forest classifier...\n')
-A_I_Enhancer_classifier = RandomForestClassifier(n_estimators=100,criterion='entropy')
-A_I_Enhancer_classifier.fit(A_I_Enhancer_X_train,A_I_Enhancer_y_train)
+print('Training Active Inactive Enhancer Random forest classifier\nwith grid search model selection and cross validation...\n')
 
+A_I_Enhancer_parameters = [{'n_estimators':[10,50,100,200],'criterion':['entropy']}]
+A_I_Enhancer_classifier = GridSearchCV(estimator=RandomForestClassifier(),param_grid=A_I_Enhancer_parameters,scoring='f1',cv=3)
+A_I_Enhancer_classifier = A_I_Enhancer_classifier.fit(A_I_Enhancer_X_train,A_I_Enhancer_y_train)
+print('Best parameters value: '+str(A_I_Enhancer_classifier.best_params_)+'\n')
+print('Best scores on 3-Fold cross validation: '+str(A_I_Enhancer_classifier.best_score_)+'\n')
 y_AI_Enhancer_pred = A_I_Enhancer_classifier.predict(A_I_Enhancer_X_test)
+y_AI_Enhancer_pred_labels = A_I_Enhancer_encoder.inverse_transform(y_AI_Enhancer_pred)
+y_AI_Enhancer_test_labels = A_I_Enhancer_encoder.inverse_transform(A_I_Enhancer_y_test)
 
-cm = confusion_matrix(A_I_Enhancer_y_test,y_AI_Enhancer_pred)
+cm = confusion_matrix(y_AI_Enhancer_test_labels,y_AI_Enhancer_pred_labels)
 print('Confusion Matrix:\n')
 print(cm)
+plot_confusion_matrix(cm,filename='A_I_Enhancer_RF_cm.png',target_names=['A-E','I-E'],title='Active Inactive Enhancer Random Forest')
 print('Accuracy score: '+str(accuracy_score(A_I_Enhancer_y_test,y_AI_Enhancer_pred)))
 print('F1 score: '+str(f1_score(A_I_Enhancer_y_test,y_AI_Enhancer_pred))+'\n')
 
 #Training and Testing Active Inactive Promoter
-print('Training Active Inactive Promoter Random forest classifier...\n')
-A_I_Promoter_classifier = RandomForestClassifier(n_estimators=100,criterion='entropy')
-A_I_Promoter_classifier.fit(A_I_Promoter_X_train,A_I_Promoter_y_train)
+print('Training Active Inactive Promoter Random forest classifier\n with grid search model selection and cross validation...\n')
+A_I_Promoter_parameters = [{'n_estimators':[10,50,100,200],'criterion':['entropy']}]
+A_I_Promoter_classifier = GridSearchCV(estimator=RandomForestClassifier(),param_grid=A_I_Promoter_parameters,scoring='f1',cv=3)
+A_I_Promoter_classifier = A_I_Promoter_classifier.fit(A_I_Promoter_X_train,A_I_Promoter_y_train)
+print('Best parameters value: '+str(A_I_Promoter_classifier.best_params_)+'\n')
+print('Best scores on 3-Fold cross validation: '+str(A_I_Promoter_classifier.best_score_)+'\n')
 
 y_AI_Promoter_pred = A_I_Promoter_classifier.predict(A_I_Promoter_X_test)
 
-cm = confusion_matrix(A_I_Promoter_y_test,y_AI_Promoter_pred)
+y_AI_Promoter_pred_labels = A_I_Promoter_encoder.inverse_transform(y_AI_Promoter_pred)
+y_AI_Promoter_test_labels = A_I_Promoter_encoder.inverse_transform(A_I_Promoter_y_test)
+
+cm = confusion_matrix(y_AI_Promoter_test_labels,y_AI_Promoter_pred_labels)
 print('Confusion Matrix:\n')
 print(cm)
+plot_confusion_matrix(cm,filename='A_I_Promoter_RF_cm.png',target_names=['A-P','I-P'],title='Active Inactive Promoter Random Forest')
 print('Accuracy score: '+str(accuracy_score(A_I_Promoter_y_test,y_AI_Promoter_pred)))
 print('F1 score: '+str(f1_score(A_I_Promoter_y_test,y_AI_Promoter_pred))+'\n')
 
 #Training and testing Active Enhancer Active Promoter
-print('Training Active Enhancer, Active Promoter Random forest classifier...\n')
-A_Enh_Prom_classifier = RandomForestClassifier(n_estimators=100,criterion='entropy')
-A_Enh_Prom_classifier.fit(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
+print('Training Active Enhancer, Active Promoter Random forest classifier\n with grid search model selection and cross validation...\n')
+A_Enh_Prom_parameters = [{'n_estimators':[10,50,100,200],'criterion':['entropy']}]
+A_Enh_Prom_classifier = GridSearchCV(estimator=RandomForestClassifier(),param_grid=A_Enh_Prom_parameters,scoring='f1',cv=3)
+A_Enh_Prom_classifier = A_Enh_Prom_classifier.fit(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
+print('Best parameters value: '+str(A_Enh_Prom_classifier.best_params_)+'\n')
+print('Best scores on 3-Fold cross validation: '+str(A_Enh_Prom_classifier.best_score_)+'\n')
 
 y_A_Enh_Prom_pred = A_Enh_Prom_classifier.predict(A_Enh_Prom_X_test)
 
-cm = confusion_matrix(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)
+y_A_Enh_Prom_pred_labels = A_Enh_Prom_encoder.inverse_transform(y_A_Enh_Prom_pred)
+y_A_Enh_Prom_test_labels = A_Enh_Prom_encoder.inverse_transform(A_Enh_Prom_y_test)
+
+cm = confusion_matrix(y_A_Enh_Prom_test_labels,y_A_Enh_Prom_pred_labels)
 print('Confusion Matrix:\n')
 print(cm)
+plot_confusion_matrix(cm,filename='A_Enhancer_Promoter_RF_cm.png',target_names=['A-E','A-P'],title='Active Enhancer Promoter Random Forest')
 print('Accuracy score: '+str(accuracy_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)))
 print('F1 score: '+str(f1_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred))+'\n')
 
