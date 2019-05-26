@@ -59,5 +59,14 @@ def plotRoc_curve(fpr,tpr,auc,filename,title):
     plt.ylabel('True Positive Rate')
     plt.xlabel('False Positive Rate')
     fig.savefig(filename, dpi=fig.dpi)
-    plt.show()
+    plt.close()
 
+def plotPrecisionRecall_curve(precision,recall,auc,filename,title):
+    fig = plt.figure(figsize=(8, 6))
+    plt.title(title)
+    plt.plot([0, 1], [0.5, 0.5], linestyle='--')
+    plt.plot(recall, precision, marker='.',label='AUPRC = %0.2f' % auc)
+    plt.ylabel('Precision')
+    plt.xlabel('Recall')
+    fig.savefig(filename, dpi=fig.dpi)
+    plt.close()
