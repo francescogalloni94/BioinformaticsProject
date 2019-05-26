@@ -111,9 +111,9 @@ y_AI_Enhancer_test_labels = A_I_Enhancer_encoder.inverse_transform(A_I_Enhancer_
 cm = confusion_matrix(y_AI_Enhancer_test_labels,y_AI_Enhancer_pred_labels)
 print('Confusion Matrix:\n')
 print(cm)
-plot_confusion_matrix(cm,filename='A_I_Enhancer_RF_cm.png',target_names=['A-E','I-E'],title='Active Inactive Enhancer Random Forest')
 print('Accuracy score: '+str(accuracy_score(A_I_Enhancer_y_test,y_AI_Enhancer_pred)))
 print('F1 score: '+str(f1_score(A_I_Enhancer_y_test,y_AI_Enhancer_pred))+'\n')
+plot_confusion_matrix(cm,filename='A_I_Enhancer_RF_cm.png',target_names=['A-E','I-E'],title='Active Inactive Enhancer Random Forest')
 fpr, tpr, roc_threshold = roc_curve(A_I_Enhancer_y_test,AI_Enhancer_probs)
 precision, recall, precision_thresholds = precision_recall_curve(A_I_Enhancer_y_test,AI_Enhancer_probs)
 roc_auc = auc(fpr,tpr)
@@ -129,14 +129,14 @@ print('Training Active Inactive Enhancer Neural Network')
 keras_classifier = KerasClassifier(build_fn=create_model,input_units=0,hidden_layers=0,hidden_units=0)
 param_grid = [{'input_units':[A_I_Enhancer_X_train.shape[1]],'hidden_layers':[1,2,3],'hidden_units':[10,20,50],
                'batch_size':[1000],'epochs':[100]}]
-AIE_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,n_jobs=-1,cv=3)
+AIE_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,scoring='f1',n_jobs=-1,cv=3)
 AIE_neural_network = AIE_neural_network.fit(A_I_Enhancer_X_train,A_I_Enhancer_y_train)
 print('best neural network parameters are: \n')
 print(AIE_neural_network.best_params_)
 print('best accuracy on 3-fold cross validation: '+str(AIE_neural_network.best_score_))
 
 y_AI_Enhancer_pred = AIE_neural_network.predict(A_I_Enhancer_X_test)
-AI_Enhancer_probs = A_I_Enhancer_classifier.predict_proba(A_I_Enhancer_X_test)
+AI_Enhancer_probs = AIE_neural_network.predict_proba(A_I_Enhancer_X_test)
 AI_Enhancer_probs = AI_Enhancer_probs[:,1]
 y_AI_Enhancer_pred_labels = A_I_Enhancer_encoder.inverse_transform(y_AI_Enhancer_pred)
 y_AI_Enhancer_test_labels = A_I_Enhancer_encoder.inverse_transform(A_I_Enhancer_y_test)
@@ -193,14 +193,14 @@ print('Training Active Inactive Promoter Neural Network')
 keras_classifier = KerasClassifier(build_fn=create_model,input_units=0,hidden_layers=0,hidden_units=0)
 param_grid = [{'input_units':[A_I_Promoter_X_train.shape[1]],'hidden_layers':[1,2,3],'hidden_units':[10,20,50],
                'batch_size':[1000],'epochs':[100]}]
-AIP_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,n_jobs=-1,cv=3)
+AIP_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,scoring='f1',n_jobs=-1,cv=3)
 AIP_neural_network = AIP_neural_network.fit(A_I_Promoter_X_train,A_I_Promoter_y_train)
 print('best neural network parameters are: \n')
 print(AIP_neural_network.best_params_)
 print('best accuracy on 3-fold cross validation: '+str(AIP_neural_network.best_score_))
 
 y_AI_Promoter_pred = AIP_neural_network.predict(A_I_Promoter_X_test)
-AI_Promoter_probs = A_I_Promoter_classifier.predict_proba(A_I_Promoter_X_test)
+AI_Promoter_probs = AIP_neural_network.predict_proba(A_I_Promoter_X_test)
 AI_Promoter_probs = AI_Promoter_probs[:,1]
 y_AI_Promoter_pred_labels = A_I_Promoter_encoder.inverse_transform(y_AI_Promoter_pred)
 y_AI_Promoter_test_labels = A_I_Promoter_encoder.inverse_transform(A_I_Promoter_y_test)
@@ -238,7 +238,7 @@ y_A_Enh_Prom_test_labels = A_Enh_Prom_encoder.inverse_transform(A_Enh_Prom_y_tes
 cm = confusion_matrix(y_A_Enh_Prom_test_labels,y_A_Enh_Prom_pred_labels)
 print('Confusion Matrix:\n')
 print(cm)
-plot_confusion_matrix(cm,filename='A_Enhancer_Promoter_RF_cm.png',target_names=['A-E','A-P'],title='Active Enhancer Promoter Random Forest')
+plot_confusion_matrix(cm,filename='A_Enh_Prom_RF_cm.png',target_names=['A-E','A-P'],title='Active Enhancer Promoter Random Forest')
 print('Accuracy score: '+str(accuracy_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)))
 print('F1 score: '+str(f1_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred))+'\n')
 fpr, tpr, roc_threshold = roc_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
@@ -255,14 +255,14 @@ print('Training Active Enhancer Active Promoter Neural Network')
 keras_classifier = KerasClassifier(build_fn=create_model,input_units=0,hidden_layers=0,hidden_units=0)
 param_grid = [{'input_units':[A_Enh_Prom_X_train.shape[1]],'hidden_layers':[1,2,3],'hidden_units':[10,20,50],
                'batch_size':[1000],'epochs':[100]}]
-AEP_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,n_jobs=-1,cv=3)
+AEP_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,scoring='f1',n_jobs=-1,cv=3)
 AEP_neural_network = AEP_neural_network.fit(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
 print('best neural network parameters are: \n')
 print(AEP_neural_network.best_params_)
 print('best accuracy on 3-fold cross validation: '+str(AEP_neural_network.best_score_))
 
 y_A_Enh_Prom_pred = AEP_neural_network.predict(A_Enh_Prom_X_test)
-A_Enh_Prom_probs = A_Enh_Prom_classifier.predict_proba(A_Enh_Prom_X_test)
+A_Enh_Prom_probs = AEP_neural_network.predict_proba(A_Enh_Prom_X_test)
 A_Enh_Prom_probs = A_Enh_Prom_probs[:,1]
 y_A_Enh_Prom_pred_labels = A_Enh_Prom_encoder.inverse_transform(y_A_Enh_Prom_pred)
 y_A_Enh_Prom_test_labels = A_Enh_Prom_encoder.inverse_transform(A_Enh_Prom_y_test)
@@ -271,7 +271,7 @@ cm = confusion_matrix(y_A_Enh_Prom_test_labels,y_A_Enh_Prom_pred_labels)
 print('Confusion Matrix:\n')
 print(cm)
 plot_confusion_matrix(cm,filename='A_Enh_Prom_NN_cm.png',target_names=['A-P','A-E'],title='Active Enhancer Active Promoter Neural Network')
-print('Accuracy score: '+str(accuracy_score(A_I_Promoter_y_test,y_AI_Promoter_pred)))
+print('Accuracy score: '+str(accuracy_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)))
 print('F1 score: '+str(f1_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred))+'\n')
 fpr, tpr, roc_threshold = roc_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
 precision, recall, precision_thresholds = precision_recall_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
@@ -281,9 +281,4 @@ print('AUROC: '+str(roc_auc))
 print('AUPRC: '+str(pr_auc))
 plotRoc_curve(fpr,tpr,roc_auc,'A_Enh_Prom_NN_roc.png','ROC curve Active Enhancer Active Promoter Neural Network')
 plotPrecisionRecall_curve(precision,recall,pr_auc,'A_Enh_Prom_NN_pr.png','P-R curve Active Enhancer Active Promoter Neural Network')
-
-
-
-
-
 
