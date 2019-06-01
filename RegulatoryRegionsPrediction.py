@@ -251,34 +251,51 @@ plotRoc_curve(fpr,tpr,roc_auc,'A_Enh_Prom_RF_roc.png','ROC curve Active Enhancer
 plotPrecisionRecall_curve(precision,recall,pr_auc,'A_Enh_Prom_RF_pr.png','P-R curve Active Enhancer Active Promoter Random Forest')
 
 #Training and testing Active Enhancer  Active Promoter Neural Network
-print('Training Active Enhancer Active Promoter Neural Network')
-keras_classifier = KerasClassifier(build_fn=create_model,input_units=0,hidden_layers=0,hidden_units=0)
-param_grid = [{'input_units':[A_Enh_Prom_X_train.shape[1]],'hidden_layers':[1,2,3],'hidden_units':[10,20,50],
-               'batch_size':[1000],'epochs':[100]}]
-AEP_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,scoring='f1',n_jobs=-1,cv=3)
-AEP_neural_network = AEP_neural_network.fit(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
-print('best neural network parameters are: \n')
-print(AEP_neural_network.best_params_)
-print('best accuracy on 3-fold cross validation: '+str(AEP_neural_network.best_score_))
+def A_Enh_prom_NeuralNetwork(X_train,y_train,balanced=False):
 
-y_A_Enh_Prom_pred = AEP_neural_network.predict(A_Enh_Prom_X_test)
-A_Enh_Prom_probs = AEP_neural_network.predict_proba(A_Enh_Prom_X_test)
-A_Enh_Prom_probs = A_Enh_Prom_probs[:,1]
-y_A_Enh_Prom_pred_labels = A_Enh_Prom_encoder.inverse_transform(y_A_Enh_Prom_pred)
-y_A_Enh_Prom_test_labels = A_Enh_Prom_encoder.inverse_transform(A_Enh_Prom_y_test)
+    if balanced:
+        name = 'balanced'
+    else:
+        name = ''
 
-cm = confusion_matrix(y_A_Enh_Prom_test_labels,y_A_Enh_Prom_pred_labels)
-print('Confusion Matrix:\n')
-print(cm)
-plot_confusion_matrix(cm,filename='A_Enh_Prom_NN_cm.png',target_names=['A-P','A-E'],title='Active Enhancer Active Promoter Neural Network')
-print('Accuracy score: '+str(accuracy_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)))
-print('F1 score: '+str(f1_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred))+'\n')
-fpr, tpr, roc_threshold = roc_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
-precision, recall, precision_thresholds = precision_recall_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
-roc_auc = auc(fpr,tpr)
-pr_auc = auc(recall, precision)
-print('AUROC: '+str(roc_auc))
-print('AUPRC: '+str(pr_auc))
-plotRoc_curve(fpr,tpr,roc_auc,'A_Enh_Prom_NN_roc.png','ROC curve Active Enhancer Active Promoter Neural Network')
-plotPrecisionRecall_curve(precision,recall,pr_auc,'A_Enh_Prom_NN_pr.png','P-R curve Active Enhancer Active Promoter Neural Network')
+    print('Training Active Enhancer Active Promoter Neural Network '+name)
+    keras_classifier = KerasClassifier(build_fn=create_model,input_units=0,hidden_layers=0,hidden_units=0)
+    param_grid = [{'input_units':[X_train.shape[1]],'hidden_layers':[1,2,3],'hidden_units':[10,20,50],
+                   'batch_size':[1000],'epochs':[100]}]
+    AEP_neural_network = GridSearchCV(estimator=keras_classifier,param_grid=param_grid,scoring='f1',n_jobs=-1,cv=3)
+    AEP_neural_network = AEP_neural_network.fit(X_train,y_train)
+    print('best neural network parameters are: \n')
+    print(AEP_neural_network.best_params_)
+    print('best accuracy on 3-fold cross validation: '+str(AEP_neural_network.best_score_))
 
+    y_A_Enh_Prom_pred = AEP_neural_network.predict(A_Enh_Prom_X_test)
+    A_Enh_Prom_probs = AEP_neural_network.predict_proba(A_Enh_Prom_X_test)
+    A_Enh_Prom_probs = A_Enh_Prom_probs[:,1]
+    y_A_Enh_Prom_pred_labels = A_Enh_Prom_encoder.inverse_transform(y_A_Enh_Prom_pred)
+    y_A_Enh_Prom_test_labels = A_Enh_Prom_encoder.inverse_transform(A_Enh_Prom_y_test)
+
+    cm = confusion_matrix(y_A_Enh_Prom_test_labels,y_A_Enh_Prom_pred_labels)
+    print('Confusion Matrix:\n')
+    print(cm)
+    plot_confusion_matrix(cm,filename='A_Enh_Prom_NN_cm_'+name+'.png',target_names=['A-P','A-E'],title='Active Enhancer Active Promoter Neural Network '+name)
+    print('Accuracy score: '+str(accuracy_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred)))
+    print('F1 score: '+str(f1_score(A_Enh_Prom_y_test,y_A_Enh_Prom_pred))+'\n')
+    fpr, tpr, roc_threshold = roc_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
+    precision, recall, precision_thresholds = precision_recall_curve(A_Enh_Prom_y_test,A_Enh_Prom_probs)
+    roc_auc = auc(fpr,tpr)
+    pr_auc = auc(recall, precision)
+    print('AUROC: '+str(roc_auc))
+    print('AUPRC: '+str(pr_auc))
+    plotRoc_curve(fpr,tpr,roc_auc,'A_Enh_Prom_NN_roc_'+name+'.png','ROC curve Active Enhancer Active Promoter Neural Network '+name)
+    plotPrecisionRecall_curve(precision,recall,pr_auc,'A_Enh_Prom_NN_pr_'+name+'.png','P-R curve Active Enhancer Active Promoter Neural Network '+name)
+
+
+
+A_Enh_prom_NeuralNetwork(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
+
+#Trying balancing data
+from imblearn.over_sampling import RandomOverSampler
+ros = RandomOverSampler()
+X_resampled, Y_resampled = ros.fit_resample(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
+
+A_Enh_prom_NeuralNetwork(X_resampled,Y_resampled,balanced=True)
