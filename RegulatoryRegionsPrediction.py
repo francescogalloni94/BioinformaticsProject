@@ -250,7 +250,7 @@ print('AUPRC: '+str(pr_auc))
 plotRoc_curve(fpr,tpr,roc_auc,'A_Enh_Prom_RF_roc.png','ROC curve Active Enhancer Active Promoter Random Forest')
 plotPrecisionRecall_curve(precision,recall,pr_auc,'A_Enh_Prom_RF_pr.png','P-R curve Active Enhancer Active Promoter Random Forest')
 
-#Training and testing Active Enhancer  Active Promoter Neural Network
+#function to training and testing Active Enhancer  Active Promoter Neural Network.
 def A_Enh_prom_NeuralNetwork(X_train,y_train,balanced=False):
 
     if balanced:
@@ -290,7 +290,7 @@ def A_Enh_prom_NeuralNetwork(X_train,y_train,balanced=False):
     plotPrecisionRecall_curve(precision,recall,pr_auc,'A_Enh_Prom_NN_pr_'+name+'.png','P-R curve Active Enhancer Active Promoter Neural Network '+name)
 
 
-
+#training neural network on imbalanced data
 A_Enh_prom_NeuralNetwork(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
 
 #Trying balancing data
@@ -298,4 +298,5 @@ from imblearn.over_sampling import RandomOverSampler
 ros = RandomOverSampler()
 X_resampled, Y_resampled = ros.fit_resample(A_Enh_Prom_X_train,A_Enh_Prom_y_train)
 
+#training neural network on balanced data
 A_Enh_prom_NeuralNetwork(X_resampled,Y_resampled,balanced=True)

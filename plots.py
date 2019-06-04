@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import itertools
 
+#function that plot confusion matrix to file
 def plot_confusion_matrix(cm,
                           target_names,filename,
                           title='Confusion matrix',
@@ -48,6 +49,7 @@ def plot_confusion_matrix(cm,
     fig.savefig(filename, dpi=fig.dpi)
     plt.close()
 
+#function that plot roc curve to file
 def plotRoc_curve(fpr,tpr,auc,filename,title):
     fig = plt.figure(figsize=(8, 6))
     plt.title(title)
@@ -61,6 +63,7 @@ def plotRoc_curve(fpr,tpr,auc,filename,title):
     fig.savefig(filename, dpi=fig.dpi)
     plt.close()
 
+#function that plot precision recall curve to file
 def plotPrecisionRecall_curve(precision,recall,auc,filename,title):
     fig = plt.figure(figsize=(8, 6))
     plt.title(title)
